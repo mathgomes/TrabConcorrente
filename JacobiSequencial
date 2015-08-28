@@ -1,0 +1,142 @@
+#include <stdbool.h>
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+void leitura(int *ordem, int *fila, double *erro, double *iteracao){
+    scanf("%d %d %lf %d", ordem, fila, erro, iteracao);
+}
+
+double **leituraMa(int ordem){
+    double **a;
+    int i, j;
+
+    a = (double**) malloc(ordem*sizeof(double*));
+    for(i=0;i<ordem;++i){
+        a[i] = (double*) malloc(ordem*sizeof(double));
+        for(j=0;j<ordem;++j){
+            scanf("%lf", &a[i][j]);
+
+        }
+    }
+    return a;
+}
+
+double *leituraMb(int ordem){
+    double *b;
+    int j;
+
+    b = (double*) malloc(ordem*sizeof(double));
+    for(j=0;j<ordem;++j){
+        scanf("%lf", &b[j]);
+    }
+    return b;
+}
+
+double *criaVInicio(double **a, double *b, int ordem){
+    double *result;
+    int i;
+
+    result = (double*) malloc(ordem*sizeof(double));
+    for(i=0;i<ordem;++i){
+        //result[i] = b[i]/a[i][i];
+    }
+    result[0] = 0.7;
+    result[1] = -1.6;
+    result[2] = 0.6;
+
+    return result;
+
+}
+
+void jacobi_richardson(double **a, double *b, double *vetorInicio, int ordem, int fila, int iteracao, double erro){
+    int i=0, j=0, converge=0, k=0;
+    double soma, res = 0, maiorDif, maiorValor, dif, *result;
+
+    //Criando o vetor que conterá os resultados.
+    result = (double*) malloc(ordem*sizeof(double));
+
+    //Verifica se o sistema irá convergir. A variável 'fila' é a linha da matriz em que testará o processo
+    for(i=0;i<ordem;++i){
+        soma=0;
+       for(j=0;j<ordem;++j){
+            if(i!=j){
+                soma = soma + abs(a[i][j]);
+                a[i][j] = a[i][j]/a[i][i];
+            }
+
+       }
+       if(soma < a[i][i]){
+            converge++;
+       }
+       b[i] = b[i]/a[i][i];
+       a[i][i] = 1;
+    }
+
+    //faz result receber o vetorInicio.
+    if(converge==ordem){
+        printf("O sistema converge! \n");
+
+        while(k<iteracao){
+            maiorDif = -100000;
+            maiorValor = -100000;
+            for(i=0;i<ordem;++i){
+                soma=0;
+                for(j=0;j<3;++j){
+                    if(i!=j)
+                        soma += -(a[i][j]*vetorInicio[j]);
+
+                }
+                soma += b[i];
+
+
+                if(k!=0)
+                    vetorInicio[i] = result[i];
+                //quarda os valores dos Xi.
+                result[i] = soma;
+                //guarda o maior valor dentre a diferença dos atuais Xi e os antereiores.
+                if(maiorDif < fabs(result[i]-vetorInicio[i])){
+                    maiorDif = fabs(result[i]-vetorInicio[i]);
+                }
+                //guarda o maior valor dentre os atuais Xi.
+                if(maiorValor < fabs(result[i])){
+                    maiorValor = fabs(result[i]);
+                }
+            }
+
+            printf("MAIOR: %lf %lf\n", maiorValor, maiorDif);
+            //subtrai em modulo o atual valor da posição result pelo valor anterior. Tudo isso divide pelo modulo do atual valor da posicao result.
+            dif = maiorDif / maiorValor;
+            printf("DIFERENCA: %lf\n", dif);
+            //compara para ver se é menor que o erro.
+            if(dif < erro){
+                break;
+            }
+            k++;
+        }
+    }
+}
+
+int main(){
+    double erro, **a, *b, *vetorInicio;
+    int i, j, fila, ordem, iteracao;
+
+    leitura(&ordem, &fila, &erro, &iteracao);
+
+    a = leituraMa(ordem);
+    /*for(i=0;i<ordem;++i){
+        for(j=0;j<ordem;++j){
+            printf("%lf ", a[i][j]);
+        }
+        printf("\n");
+    }*/
+
+    b = leituraMb(ordem);
+    /*printf("\n");
+    for(j=0;j<ordem;++j){
+        printf("%lf ", b[j]);
+    }*/
+    printf("\n");
+    vetorInicio = criaVInicio(a, b, ordem);
+    jacobi_richardson(a, b, vetorInicio, ordem, fila, iteracao, erro);
+}
