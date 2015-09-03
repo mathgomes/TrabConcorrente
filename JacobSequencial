@@ -117,6 +117,7 @@ double *jacobi_richardson(double **a, double *b, double *vetorInicio, int J_ORDE
 
             //subtrai em modulo o atual valor da posição result pelo valor anterior. Tudo isso divide pelo modulo do atual valor da posicao result.
             dif = maiorDif / maiorValor;
+
             //compara para ver se é menor que o erro.
             if(dif <= J_ERROR){
                 break;
