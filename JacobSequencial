@@ -13,7 +13,7 @@
 #include <time.h>
 
 /*Função de leitura das entradas do programa*/
-void leitura(int *J_ORDER, int *J_ROW_TEST, double *J_ERROR, double *J_ITE_MAX){
+void leitura(int *J_ORDER, int *J_ROW_TEST, double *J_ERROR, int *J_ITE_MAX){
     scanf("%d %d %lf %d", J_ORDER, J_ROW_TEST, J_ERROR, J_ITE_MAX);
 }
 
