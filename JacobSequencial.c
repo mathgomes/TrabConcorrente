@@ -12,12 +12,25 @@
 #include <stdlib.h>
 #include <time.h>
 
-/*Função de leitura das entradas do programa*/
+/**Função de leitura das entradas do programa
+
+    Args:
+    int *J_ORDER : ponteiro para a ordem da matriz
+    int *J_ROW_TEST : ponteiro para a coluna teste
+    double *J_ERROR : ponteiro para o erro a ser avaliado
+    int *J_ITE_MAX : ponteiro para o maximo de iteracoes
+*/
 void leitura(int *J_ORDER, int *J_ROW_TEST, double *J_ERROR, int *J_ITE_MAX){
     scanf("%d %d %lf %d", J_ORDER, J_ROW_TEST, J_ERROR, J_ITE_MAX);
 }
 
-/*Função de leitura da matriz A*/
+/**Função de leitura da matriz A
+
+    Args:
+    int J_ORDER : ordem da matriz
+    Return:
+    Ponteiro de ponteiro para a matriz lida
+*/
 double **leituraMa(int J_ORDER){
     double **a;
     int i, j;
@@ -33,7 +46,13 @@ double **leituraMa(int J_ORDER){
     return a;
 }
 
-/*Função de leitura do vetor B*/
+/**Função de leitura da matriz B
+
+    Args:
+    int J_ORDER : ordem da matriz
+    Return:
+    Ponteiro para a matriz lida
+*/
 double *leituraMb(int J_ORDER){
     double *b;
     int j;
@@ -45,7 +64,17 @@ double *leituraMb(int J_ORDER){
     return b;
 }
 
-/*Função que cria o vetor usado para guardar os valores iniciais dos Xi*/
+/**Função que cria o vetor usado para guardar os valores iniciais dos Xi
+
+    Args:
+    double **a : Ponteiro para a matriz A
+    double *b : Ponteiro para a matriz B
+    int J_ORDER : ordem da matriz
+
+    Return:
+    ponteiro para o vetor inicial
+
+*/
 double *criaVInicio(double **a, double *b, int J_ORDER){
     double *result;
     int i;
@@ -58,7 +87,20 @@ double *criaVInicio(double **a, double *b, int J_ORDER){
     return result;
 }
 
-/*Função que executa o método Jacobi-Richardson*/
+/**Função que executa o método Jacobi-Richardson
+
+    Args:
+    double **a : ponteiro para matriz A
+    double *b : ponteiro para matriz B
+    double *vetorInicio : ponteiro para o vetor inicial
+    int J_ORDER : Ordem da matriz
+    int J_ROW_TEST : Coluna a ser testada
+    int J_ITE_MAX : Maximo de iteracoes
+    double J_ERROR : Erro a ser avaliado
+
+    Return:
+    Ponteiro para o vetor de solucoes
+*/
 double *jacobi_richardson(double **a, double *b, double *vetorInicio, int J_ORDER, int J_ROW_TEST, int J_ITE_MAX, double J_ERROR){
     int i=0, j=0, converge=0, k=0;
     double soma, res = 0, maiorDif, maiorValor, dif, *result, *vetAux;
@@ -110,7 +152,6 @@ double *jacobi_richardson(double **a, double *b, double *vetorInicio, int J_ORDE
                 }
                 vetAux[i] = result[i];
             }
-
             for(i=0;i<J_ORDER;++i){
                 vetorInicio[i] = vetAux[i];
             }
@@ -135,10 +176,18 @@ double *jacobi_richardson(double **a, double *b, double *vetorInicio, int J_ORDE
         printf("----------------------------------");
 
     }
+
     return result;
+
 }
 
-/*Função que escreve no arquivo os resultados finais dos Xi*/
+/**Função que escreve no arquivo os resultados finais dos Xi
+
+    Args:
+    double *resultado : Ponteiro para o vetor de solucoes
+    int J_ORDER : Ordem da matriz
+    double tempo : Tempo calculado da execucao do programa
+*/
 void escreverArquivo(double *resultado, int J_ORDER, double tempo){
     int i;
     FILE *arq;

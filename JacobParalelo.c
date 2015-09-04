@@ -19,11 +19,20 @@
                                     "%s : %d : %d\n", __FILE__, __LINE__,  \
                                     strerror(errno)); exit(EXIT_FAILURE) ;}} \
                             while (0)
+
+
 typedef struct {
 
-    int id,J_ORDER;
+    int *id;
     int *forBegin;
     int *forEnd;
+
+}thread_args;
+
+typedef struct {
+
+    int J_ORDER;
+    thread_args *Targs;
     double maiorDif,maiorValor;
     double **a;
     double *b;
@@ -31,15 +40,16 @@ typedef struct {
     double *vetorInicio;
     double *vetAux;
 
-}thread_args;
+}function_args;
 
+FILE *arq2;
 void *process( void *ptr ) {
 
-
-    thread_args *args = (thread_args*)ptr;
+    function_args *args = (function_args*)ptr;
     int i,j;
     double soma;
-    for(i=0;i<args->J_ORDER;++i){
+    for(i=; i < ; ++i){
+        //fprintf(arq2,"thread %d acessando posicao %d\n",args->id,i);
         soma=0;
         for(j=0;j<args->J_ORDER;++j){
             if(i!=j){
@@ -48,7 +58,7 @@ void *process( void *ptr ) {
         }
         soma += args->b[i];
 
-        //quarda os valores dos Xi.
+        //guarda os valores dos Xi.
         args->result[i] = soma;
         //guarda o maior valor dentre a diferença dos atuais Xi e os da interação anterior.
         if(args->maiorDif < fabs(args->result[i]-args->vetorInicio[i])){
@@ -110,19 +120,22 @@ double *criaVInicio(double **a, double *b, int J_ORDER){
 }
 
 /*Função que executa o método Jacobi-Richardson*/
-double *jacobi_richardson(pthread_t *thread, thread_args *args, int numThreads, int J_ORDER, int J_ROW_TEST, int J_ITE_MAX, double J_ERROR){
+double *jacobi_richardson(pthread_t *thread, function_args *args, int numThreads, int J_ORDER, int J_ROW_TEST, int J_ITE_MAX, double J_ERROR){
     int i=0, j=0, converge=0, k=0,return1;
     double soma, res = 0, dif;
-
+    numThreads = 5;
+    args->J_ORDER = J_ORDER;
     //Criando o vetor que conterá os resultados.
     args->result = (double*) malloc(J_ORDER*sizeof(double));
     args->vetAux = (double*) malloc(J_ORDER*sizeof(double));
+
 
     //Verifica se o sistema irá convergir. A variável 'fila' é a linha da matriz em que testará o processo
     for(i=0;i<J_ORDER;++i){
         soma=0;
        for(j=0;j<J_ORDER;++j){
             if(i!=j){
+                //printf("%d %d %lf %lf\n",i,j,soma,args->a[i][j]);
                 soma = soma + fabs(args->a[i][j]);
                 args->a[i][j] = args->a[i][j]/args->a[i][i];
             }
@@ -135,18 +148,34 @@ double *jacobi_richardson(pthread_t *thread, thread_args *args, int numThreads, 
        args->a[i][i] = 1;
     }
 
+
+    args->Targs = (thread_args*)malloc(numThreads*sizeof(thread_args));
+
+    args->Targs->id = (int*)malloc(numThreads*sizeof(int));
+    args->Targs->forBegin = (int*)malloc(numThreads*sizeof(int));
+    args->Targs->forEnd = (int*)malloc(numThreads*sizeof(int));
+    args->Targs->forBegin[0] = 0;
+    args->Targs->forEnd[0] = args->J_ORDER/numThreads;
+
+    for(i=1;i < numThreads;i ++) {
+        args->Targs->id[i] = i;
+        args->Targs->forBegin[i] = args->Targs->forBegin[i-1] + args->J_ORDER/numThreads;
+        args->Targs->forEnd[i] = args->Targs->forEnd[i-1] + args->J_ORDER/numThreads;
+    }
+
     //faz result receber o vetorInicio.
     if(converge==J_ORDER){
         while(k<J_ITE_MAX){
             args->maiorDif = -100000;
             args->maiorValor = -100000;
             for(i =0; i < numThreads; i ++) {
-                args->id = i;
                 return1 = pthread_create( &thread[i], NULL, process, (void*)args);
                 fatal(return1 != 0);
 
             }
-
+            for(i=0; i< numThreads; i++){
+                pthread_join(thread[i], NULL);
+            }
             for(i=0;i<J_ORDER;++i){
                 args->vetorInicio[i] = args->vetAux[i];
             }
@@ -172,6 +201,7 @@ double *jacobi_richardson(pthread_t *thread, thread_args *args, int numThreads, 
 
     }
     return args->result;
+
 }
 
 /*Função que escreve no arquivo os resultados finais dos Xi*/
@@ -194,18 +224,19 @@ int main(){
 
     int numCPU = sysconf(_SC_NPROCESSORS_ONLN);
     pthread_t *thread = (pthread_t*)malloc(numCPU*sizeof(pthread_t));
-    thread_args *args = (thread_args*)malloc(sizeof(thread_args));
+    function_args *args = (function_args*)malloc(sizeof(function_args));
 
     double J_ERROR, **a, *b, *vetorInicio, *resultado, tempo;
     int i, j, J_ROW_TEST, J_ORDER, J_ITE_MAX;
     clock_t itime, ftime;
 
+    arq2 = fopen("result.txt","w+");
     leitura(&J_ORDER, &J_ROW_TEST, &J_ERROR, &J_ITE_MAX);
 
-    a = leituraMa(J_ORDER);
-    b = leituraMb(J_ORDER);
+    args->a = leituraMa(J_ORDER);
+    args->b = leituraMb(J_ORDER);
 
-    vetorInicio = criaVInicio(a, b, J_ORDER);
+    args->vetorInicio = criaVInicio(args->a, args->b, J_ORDER);
 
     itime = clock();
     resultado = jacobi_richardson(thread,args,numCPU, J_ORDER, J_ROW_TEST, J_ITE_MAX, J_ERROR);
