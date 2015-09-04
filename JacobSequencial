@@ -133,17 +133,18 @@ double *jacobi_richardson(double **a, double *b, double *vetorInicio, int J_ORDE
         printf("Iterations: %d\n", k);
         printf("RowTest: %d => [%lf] =? %lf\n", J_ROW_TEST, soma, b[J_ROW_TEST]);
         printf("----------------------------------");
-    }
 
+    }
     return result;
 }
 
 /*Função que escreve no arquivo os resultados finais dos Xi*/
-void escreverArquivo(double *resultado, int J_ORDER){
+void escreverArquivo(double *resultado, int J_ORDER, double tempo){
     int i;
     FILE *arq;
 
     arq = fopen("resultado.txt","w+");
+    fprintf(arq, "Tempo de execução: %lf\nOrdem do sistema linear: %d \n\n", tempo, J_ORDER);
 
     for(i=0;i<J_ORDER;++i){
         fprintf(arq, "X%d: %lf\n", i, resultado[i]);
@@ -153,7 +154,7 @@ void escreverArquivo(double *resultado, int J_ORDER){
 }
 
 int main(){
-    double J_ERROR, **a, *b, *vetorInicio, *resultado;
+    double J_ERROR, **a, *b, *vetorInicio, *resultado, tempo;
     int i, j, J_ROW_TEST, J_ORDER, J_ITE_MAX;
     clock_t itime, ftime;
 
@@ -168,9 +169,9 @@ int main(){
     resultado = jacobi_richardson(a, b, vetorInicio, J_ORDER, J_ROW_TEST, J_ITE_MAX, J_ERROR);
 
     ftime = clock();
-    //printf("\n%lf\n",(ftime-itime) / (CLOCKS_PER_SEC * 1.0));
+    tempo = (ftime-itime) / (CLOCKS_PER_SEC * 1.0);
 
-    escreverArquivo(resultado, J_ORDER);
+    escreverArquivo(resultado, J_ORDER, tempo);
 
     return 0;
 }
