@@ -2,7 +2,7 @@
 * Grupo_27: Matheus Gomes ; Renato José.                    *
 * Nº USP: 8532321 ; 8531790.                                *
 * Início: 24/08/15                                          *
-* Última alteração: 03/09/15                                *
+* Última alteração: 06/09/15                                *
 * Função: Método Jacobi-Richardson Sequencial               *
 ************************************************************/
 
@@ -151,7 +151,7 @@ void *process( void *ptr ) {
     int *J_ITE_MAX : ponteiro para o maximo de iteracoes
 */
 void leitura(int *J_ORDER, int *J_ROW_TEST, double *J_ERROR, int *J_ITE_MAX){
-    fscanf(arq2,"%d %d %lf %d", J_ORDER, J_ROW_TEST, J_ERROR, J_ITE_MAX);
+    scanf(arq2,"%d %d %lf %d", J_ORDER, J_ROW_TEST, J_ERROR, J_ITE_MAX);
 }
 
 /**Função de leitura da matriz A
@@ -169,7 +169,7 @@ double **leituraMa(int J_ORDER){
     for(i=0;i<J_ORDER;++i){
         a[i] = (double*) malloc(J_ORDER*sizeof(double));
         for(j=0;j<J_ORDER;++j){
-            fscanf(arq2,"%lf", &a[i][j]);
+            scanf(arq2,"%lf", &a[i][j]);
 
         }
     }
@@ -189,7 +189,7 @@ double *leituraMb(int J_ORDER){
 
     b = (double*) malloc(J_ORDER*sizeof(double));
     for(j=0;j<J_ORDER;++j){
-        fscanf(arq2,"%lf", &b[j]);
+        scanf(arq2,"%lf", &b[j]);
     }
     return b;
 }
