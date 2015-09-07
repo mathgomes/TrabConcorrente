@@ -67,7 +67,6 @@ void *process( void *ptr ) {
         // executa uma secao do for loop
         case 0 :
             for(i=args->Targs->forBegin[args->Targs->id[0]]; i < args->Targs->forEnd[args->Targs->id[0]]; ++i){
-                fprintf(arq2,"000thread %d acessando posicao %d\n",args->Targs->id[0],i);
                 soma=0;
                 for(j=0;j<args->J_ORDER;++j){
                     if(i!=j){
@@ -83,7 +82,6 @@ void *process( void *ptr ) {
             break;
         case 1:
             for(i=args->Targs->forBegin[args->Targs->id[1]]; i < args->Targs->forEnd[args->Targs->id[1]]; ++i){
-                fprintf(arq2,"111thread %d acessando posicao %d\n",args->Targs->id[1],i);
                 soma=0;
                 for(j=0;j<args->J_ORDER;++j){
                     if(i!=j){
@@ -99,7 +97,6 @@ void *process( void *ptr ) {
             break;
         case 2:
             for(i=args->Targs->forBegin[args->Targs->id[2]]; i < args->Targs->forEnd[args->Targs->id[2]]; ++i){
-                fprintf(arq2,"222thread %d acessando posicao %d\n",args->Targs->id[2],i);
                 soma=0;
                 for(j=0;j<args->J_ORDER;++j){
                     if(i!=j){
@@ -115,7 +112,6 @@ void *process( void *ptr ) {
             break;
         case 3:
             for(i=args->Targs->forBegin[args->Targs->id[3]]; i < args->Targs->forEnd[args->Targs->id[3]]; ++i){
-                fprintf(arq2,"333thread %d acessando posicao %d\n",args->Targs->id[3],i);
                 soma=0;
                 for(j=0;j<args->J_ORDER;++j){
                     if(i!=j){
@@ -131,7 +127,6 @@ void *process( void *ptr ) {
             break;
         case 4:
             for(i=args->Targs->forBegin[args->Targs->id[4]]; i < args->Targs->forEnd[args->Targs->id[4]]; ++i){
-                fprintf(arq2,"444thread %d acessando posicao %d\n",args->Targs->id[4],i);
                 soma=0;
                 for(j=0;j<args->J_ORDER;++j){
                     if(i!=j){
